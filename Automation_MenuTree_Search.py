@@ -1,5 +1,6 @@
 from tkinter import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageChops
+import json
 
 WIDTH = 1024                            #H/U 화면의 가로 사이즈, 2560
 HEIGHT = 288                            #H/U 화면의 세로 사이즈, 720
@@ -9,6 +10,43 @@ WIDTH_NUM = int(WIDTH/GAP)              #최대 가로 이동 횟수
 HEIGHT_NUM = int(HEIGHT/GAP)            #최대 세로 이동 횟수
 TOTAL_MOVE = WIDTH_NUM * HEIGHT_NUM     #총 이동 횟수
 
+def Image_difference(img1, img2):
+    if ImageChops.difference(img1, img2).getbbox() is None:
+        return 0    #같음
+    else:
+        return 1    #다름
+
+def Test_JSON():
+    ID = 123
+    DEPTH = 1
+    CURPATH = "111"
+    COORD_X = 100
+    COORD_Y = 200
+    IMGPATH = "aaa"
+    DESCRIPTION = "bbb"
+    PARENT_ID = 0
+    COMPLETE = 0
+
+    info = {
+        'id' : ID,
+        'depth' : DEPTH,
+        'curpath' : CURPATH,
+        'coordination' : [{'x' : COORD_X, 'y' : COORD_Y}, {'x' : 1, 'y' : 2}],
+        'imgpath' : IMGPATH,
+        'description' : DESCRIPTION,
+        'parent_id' : PARENT_ID,
+        'complete' : COMPLETE
+    }
+
+    inn = info
+    jsonString = json.dumps(info, indent=4)
+    print(inn)
+    print(jsonString)
+    print(info['id'])
+    info['id'] = 222
+    info['curpath'] = "sss"
+    print(info)
+
 def Print_Coordinate():
     global WIDTH            #함수 내에서 위에서 선언한 글로벌 변수 참조하기 위해 global 사용
     global HEIGHT
@@ -17,10 +55,13 @@ def Print_Coordinate():
     global GAP
     global GAP2
 
-    window = Tk()                                       #윈도우 폼 생성
-    window.title("Automation Menutree Search Grid")     #윈도우 폼 타이틀 지정
+    window = Tk()                                               #윈도우 폼 생성
+    window.title("Automation Menutree Search Grid")             #윈도우 폼 타이틀 지정
     canvas  = Canvas(window, height = HEIGHT, width = WIDTH)    #그림과 좌표 찍을 캔버스 생성
     img = Image.open("./test_24bit.bmp")                        #이미지
+    img1 = Image.open("./test_24bit_red.bmp")
+    print(Image_difference(img, img1))
+
     photo = ImageTk.PhotoImage(img)                             #이미지 클래스
     canvas.create_image((514,146), image=photo)                 #캔버스에 이미지 출력
 
@@ -50,3 +91,4 @@ print("HEIGHT_NUM : %d %s" % (HEIGHT_NUM, type(HEIGHT_NUM)))
 print("TOTAL_MOVE : %d %s" % (TOTAL_MOVE, type(TOTAL_MOVE)))
 
 Print_Coordinate()
+Test_JSON()
